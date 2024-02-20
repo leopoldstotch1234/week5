@@ -10,7 +10,7 @@
           </module>
           <module name="ConstantName">
            <property name="format"
-                value="umlNUMBER1"/>
+                value="^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$"/>
          </module>
      </module>
 </module>
