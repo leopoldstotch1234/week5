@@ -2,6 +2,9 @@ package com.leszko.calculator;
 
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+/**
+ * Adding comment for week 5.
+ */
 
 @Service
 public class Calculator {
