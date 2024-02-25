@@ -11,6 +11,14 @@ node(POD_LABEL) {
   container('gradle') {
     stage('Build a gradle project') {
       echo "I am the ${env.CHANGE_BRANCE} branch"
+	                        // from the git plugin
+                    // https://www.jenkins.io/doc/pipeline/steps/git/
+                    git 'https://github.com/leopoldstotch1234/week5.git'
+                    sh '''
+                    cd Chapter08/sample1
+                    chmod +x gradlew
+                    '''
+                }
     }
     stage('Code coverage') {
       sh 'printenv'
