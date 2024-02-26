@@ -30,6 +30,7 @@ node(POD_LABEL) {
           stage("Tests") {
 		      try {
                         sh '''
+			echo "running check"
         	            pwd
                		    cd Chapter08/sample1
                           ./gradlew test
