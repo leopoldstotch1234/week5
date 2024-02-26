@@ -16,37 +16,58 @@ node(POD_LABEL) {
         git 'https://github.com/leopoldstotch1234/week5.git'
         sh '''
         cd Chapter08/sample1
-	chmod +x gradlew
+	      chmod +x gradlew
         '''
         }
     }
     stage('Code coverage') {
       sh 'printenv'
       echo "My CC branch is: ${env.BRANCH_NAME}"
-      if (env.BRANCH_NAME != "master") {
+      echo "I will execute Code Coverate only on the Master branch"
+      if (env.BRANCH_NAME == "master") {
       echo "I am the ${env.BRANCH_NAME} branch"
       }
+      try {
+        sh '''
+        pwd
+        cd Chapter08/sample1
+        ./gradlew jacocoTestCoverageVerification
+        ./gradlew jacocoTestReport
+        echo "I executed Code Coverage
+        '''
+      } catch (Exception E) {
+          echo 'Failure detected'
+        }
+
     }
     stage("Tests") {
-	    if (env.BRANCH_NAME == "master") {
       echo "I am the ${env.BRANCH_NAME} branch"
-		    try {
-                        sh '''
-			echo "running check"
-        	            pwd
-               		    cd Chapter08/sample1
-                          ./gradlew test
-                          ./gradlew jacocoTestReport
-                        '''
-                    } catch (Exception E) {
+      echo "I will execut on all branches"
+		  try {
+            sh '''
+			      echo "running check"
+        	  pwd
+            cd Chapter08/sample1
+            ./gradlew test
+            ./gradlew jacocoTestReport
+            '''
+            } catch (Exception E) {
                         echo 'Failure detected'
                     }
-      }
-		      
+        stage("CheckStyle") {
+        try {
+        sh '''
+        pwd
+        cd Chapter08/sample1
+        ./gradlew checkstyleMain
+        ./gradlew jacocoTestReport
+        '''
+        } catch (Exception E) {
+            echo 'Failure detected'
           }
-          
+      }
+    }        
+  }
 }
 }
-}
-
 
