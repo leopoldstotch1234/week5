@@ -23,13 +23,16 @@ node(POD_LABEL) {
     stage('Code coverage') {
       sh 'printenv'
       echo "My CC branch is: ${env.BRANCH_NAME}"
-      if (env.BRANCH_NAME != "main") {
+      if (env.BRANCH_NAME != "master") {
       echo "I am the ${env.BRANCH_NAME} branch"
       }
-        else 
-          stage("Tests") {
-		      try {
+    }
+    stage("Tests") {
+	    if (env.BRANCH_NAME == "master") {
+      echo "I am the ${env.BRANCH_NAME} branch"
+		    try {
                         sh '''
+			echo "running check"
         	            pwd
                		    cd Chapter08/sample1
                           ./gradlew test
@@ -38,10 +41,12 @@ node(POD_LABEL) {
                     } catch (Exception E) {
                         echo 'Failure detected'
                     }
+      }
+		      
           }
           
 }
 }
 }
-}
+
 
