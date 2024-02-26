@@ -26,7 +26,7 @@ node(POD_LABEL) {
       echo "I will execute Code Coverate only on the Master branch"
       if (env.BRANCH_NAME == "master") {
       echo "I am the ${env.BRANCH_NAME} branch"
-      }
+      
       try {
         sh '''
         pwd
@@ -38,7 +38,7 @@ node(POD_LABEL) {
       } catch (Exception E) {
           echo 'Failure detected'
         }
-
+      }
     }
     stage("Tests") {
       echo "I am the ${env.BRANCH_NAME} branch"
