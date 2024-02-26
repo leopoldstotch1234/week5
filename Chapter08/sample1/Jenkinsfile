@@ -39,6 +39,18 @@ node(POD_LABEL) {
           echo 'Failure detected'
         }
       }
+      try {
+        sh '''
+        pwd
+        cd Chapter08/sample1
+        ./gradlew jacocoTestCoverageVerification
+        ./gradlew jacocoTestReport
+        echo "I executed Code Coverage
+        '''
+      } catch (Exception E) {
+          echo 'Failure detected'
+        }
+
     }
     stage("Tests") {
       echo "I am the ${env.BRANCH_NAME} branch"
