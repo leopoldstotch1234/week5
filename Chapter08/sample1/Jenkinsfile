@@ -26,9 +26,11 @@ node(POD_LABEL) {
       if (env.BRANCH_NAME != "master") {
       echo "I am the ${env.BRANCH_NAME} branch"
       }
-        else 
-          stage("Tests") {
-		      try {
+    }
+    stage("Tests") {
+	    if (env.BRANCH_NAME == "master") {
+      echo "I am the ${env.BRANCH_NAME} branch"
+		    try {
                         sh '''
 			echo "running check"
         	            pwd
@@ -39,10 +41,12 @@ node(POD_LABEL) {
                     } catch (Exception E) {
                         echo 'Failure detected'
                     }
+      }
+		      
           }
           
 }
 }
 }
-}
+
 
