@@ -11,7 +11,7 @@ node(POD_LABEL) {
   container('gradle') {
     stage('Build a gradle project') {
       echo "I am the ${env.BRANCH_NAME} branch"
-// from the git plugin
+// from the git plugin //
 // https://www.jenkins.io/doc/pipeline/steps/git/
         git 'https://github.com/leopoldstotch1234/week5.git'
         sh '''
@@ -26,6 +26,18 @@ node(POD_LABEL) {
       echo "I will execute Code Coverate only on the Master branch"
       if (env.BRANCH_NAME == "master") {
       echo "I am the ${env.BRANCH_NAME} branch"
+      
+      try {
+        sh '''
+        pwd
+        cd Chapter08/sample1
+        ./gradlew jacocoTestCoverageVerification
+        ./gradlew jacocoTestReport
+        echo "I executed Code Coverage
+        '''
+      } catch (Exception E) {
+          echo 'Failure detected'
+        }
       }
       try {
         sh '''
@@ -70,4 +82,3 @@ node(POD_LABEL) {
   }
 }
 }
-
