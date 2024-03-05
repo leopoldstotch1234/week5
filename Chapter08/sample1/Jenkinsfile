@@ -10,6 +10,7 @@ args: '30d'
 	   ) {
 node(POD_LABEL) {
   stage('Run pipeline against a gradle project - test MAIN') {
+  bool caught = false;
   container('gradle') {
     stage('Build a gradle project') {
       echo "I am the ${env.BRANCH_NAME} branch"
@@ -23,7 +24,6 @@ node(POD_LABEL) {
         '''
         }
     }
-    try{
     stage('Code coverage') {
       sh 'printenv'
       echo "My CC branch is: ${env.BRANCH_NAME}"
@@ -41,6 +41,7 @@ node(POD_LABEL) {
         '''
       } catch (Exception E) {
           echo 'Failure detected'
+          caught = true;
         }
 	finally{
 	      publishHTML (target: [
@@ -63,6 +64,7 @@ node(POD_LABEL) {
             '''
             } catch (Exception E) {
                 echo 'Failure detected'
+                caught = true;
                 }
         stage("CheckStyle") {
           try {
@@ -75,20 +77,21 @@ node(POD_LABEL) {
           } catch (Exception E) {
             echo 'Failure detected'
           }
-	finally{	
-	publishHTML (target: [
+      	finally{	
+	      publishHTML (target: [
         reportDir: 'Chapter08/sample1/build/reports/checkstyle',
-	reportFiles: 'main.html',
+	      reportFiles: 'main.html',
         reportName: "JaCoCo checkstyle"
         ])}
         }
       }   
-	echo 'Tests pass!'
     }
-    catch(Exception E){
-      echo 'Tests failed!'
+    if(!caught){
+      echo 'tests pass!'
     }
+    else{
+      echo 'tests fail!'
     }
-  
+    
   }
 }
