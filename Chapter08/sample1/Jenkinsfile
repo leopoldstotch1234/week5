@@ -5,7 +5,9 @@ image: 'gradle',
 command: 'sleep',
 args: '30d'
 ),
-]) {
+]//,
+//podRetention: always()
+	   ) {
 node(POD_LABEL) {
   stage('Run pipeline against a gradle project - test MAIN') {
   container('gradle') {
@@ -16,7 +18,8 @@ node(POD_LABEL) {
         git 'https://github.com/leopoldstotch1234/week5.git'
         sh '''
         cd Chapter08/sample1
-	      chmod +x gradlew
+	echo "151.101.0.215 repo.maven.apache.org" | tee -a /etc/hosts
+	chmod +x gradlew
         '''
         }
     }
@@ -31,13 +34,18 @@ node(POD_LABEL) {
         sh '''
         pwd
         cd Chapter08/sample1
-        ./gradlew jacocoTestCoverageVerification
-        ./gradlew jacocoTestReport
+        ./gradlew jacocoTestCoverageVerification --refresh-dependencies
+        ./gradlew jacocoTestReport --refresh-dependencies
         echo "I executed Code Coverage"
         '''
       } catch (Exception E) {
           echo 'Failure detected'
         }
+	publishHTML (target: [
+        reportDir: 'Chapter08/sample1/build/reports/tests/test',
+        reportFiles: 'index.html',
+        reportName: "JaCoCo Report"
+        ])  
       }
     }
     stage("Tests") {
@@ -48,8 +56,8 @@ node(POD_LABEL) {
 			      echo "running check"
         	  pwd
             cd Chapter08/sample1
-            ./gradlew test
-            ./gradlew jacocoTestReport
+            ./gradlew test --refresh-dependencies
+            ./gradlew jacocoTestReport --refresh-dependencies
             '''
             } catch (Exception E) {
                 echo 'Failure detected'
@@ -59,12 +67,17 @@ node(POD_LABEL) {
             sh '''
             pwd
             cd Chapter08/sample1
-            ./gradlew checkstyleMain
-            ./gradlew jacocoTestReport
+            ./gradlew checkstyleMain --refresh-dependencies
+            ./gradlew jacocoTestReport --refresh-dependencies
             '''
           } catch (Exception E) {
             echo 'Failure detected'
           }
+	publishHTML (target: [
+        reportDir: 'Chapter08/sample1/build/reports/checkstyle',
+	reportFiles: 'main.html',
+        reportName: "JaCoCo checkstyle"
+        ])
         }
       }        
     }
