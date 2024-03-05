@@ -82,4 +82,9 @@ node(POD_LABEL) {
       }        
     }
   }
+	post {
+    always {
+      echo 'pipeline completed'
+    }
+  }
 }
