@@ -18,11 +18,12 @@ node(POD_LABEL) {
         git 'https://github.com/leopoldstotch1234/week5.git'
         sh '''
         cd Chapter08/sample1
-	echo "151.101.0.215 repo.maven.apache.org" | tee -a /etc/hosts
-	chmod +x gradlew
+	      echo "151.101.0.215 repo.maven.apache.org" | tee -a /etc/hosts
+	      chmod +x gradlew
         '''
         }
     }
+    try{
     stage('Code coverage') {
       sh 'printenv'
       echo "My CC branch is: ${env.BRANCH_NAME}"
@@ -41,7 +42,7 @@ node(POD_LABEL) {
       } catch (Exception E) {
           echo 'Failure detected'
         }
-	publishHTML (target: [
+	      publishHTML (target: [
         reportDir: 'Chapter08/sample1/build/reports/tests/test',
         reportFiles: 'index.html',
         reportName: "JaCoCo Report"
@@ -73,18 +74,18 @@ node(POD_LABEL) {
           } catch (Exception E) {
             echo 'Failure detected'
           }
-	publishHTML (target: [
+	      publishHTML (target: [
         reportDir: 'Chapter08/sample1/build/reports/checkstyle',
-	reportFiles: 'main.html',
+	      reportFiles: 'main.html',
         reportName: "JaCoCo checkstyle"
         ])
         }
       }        
     }
-  }
-	post {
-    always {
-      echo 'pipeline completed'
+    catch(Exception E){
+      echo 'Test failed!'
     }
+    }
+  
   }
 }
