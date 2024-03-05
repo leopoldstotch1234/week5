@@ -10,7 +10,7 @@ args: '30d'
 	   ) {
 node(POD_LABEL) {
   stage('Run pipeline against a gradle project - test MAIN') {
-  bool caught = false;
+  caught = false;
   container('gradle') {
     stage('Build a gradle project') {
       echo "I am the ${env.BRANCH_NAME} branch"
