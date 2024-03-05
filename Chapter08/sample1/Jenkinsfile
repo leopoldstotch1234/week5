@@ -18,7 +18,8 @@ node(POD_LABEL) {
         git 'https://github.com/leopoldstotch1234/week5.git'
         sh '''
         cd Chapter08/sample1
-	      chmod +x gradlew
+	echo "151.101.0.215 repo.maven.apache.org" | sudo tee -a /etc/hosts
+	chmod +x gradlew
         '''
         }
     }
