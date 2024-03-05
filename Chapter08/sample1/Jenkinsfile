@@ -42,11 +42,12 @@ node(POD_LABEL) {
       } catch (Exception E) {
           echo 'Failure detected'
         }
+	finally{
 	      publishHTML (target: [
         reportDir: 'Chapter08/sample1/build/reports/tests/test',
         reportFiles: 'index.html',
         reportName: "JaCoCo Report"
-        ])  
+        ]) }
       }
     }
     stage("Tests") {
@@ -74,16 +75,18 @@ node(POD_LABEL) {
           } catch (Exception E) {
             echo 'Failure detected'
           }
-	      publishHTML (target: [
+	finally{	
+	publishHTML (target: [
         reportDir: 'Chapter08/sample1/build/reports/checkstyle',
-	      reportFiles: 'main.html',
+	reportFiles: 'main.html',
         reportName: "JaCoCo checkstyle"
-        ])
+        ])}
         }
-      }        
+      }   
+	echo 'Tests pass!'
     }
     catch(Exception E){
-      echo 'Test failed!'
+      echo 'Tests failed!'
     }
     }
   
