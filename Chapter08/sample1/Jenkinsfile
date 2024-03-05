@@ -70,11 +70,11 @@ node(POD_LABEL) {
           } catch (Exception E) {
             echo 'Failure detected'
           }
-	publishHTML (target: [
-        reportDir: 'Chapter08/sample1/build/reports/checkstyle',
-	reportFiles: 'main.html',
-        reportName: "JaCoCo checkstyle"
-        ])
+	//publishHTML (target: [
+       // reportDir: 'Chapter08/sample1/build/reports/checkstyle',
+	//reportFiles: 'main.html',
+       // reportName: "JaCoCo checkstyle"
+       // ])
         }
       }        
     }
