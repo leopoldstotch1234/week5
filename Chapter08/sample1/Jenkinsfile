@@ -5,8 +5,8 @@ image: 'gradle',
 command: 'sleep',
 args: '30d'
 ),
-],
-podRetention: always()
+]//,
+//podRetention: always()
 	   ) {
 node(POD_LABEL) {
   stage('Run pipeline against a gradle project - test MAIN') {
