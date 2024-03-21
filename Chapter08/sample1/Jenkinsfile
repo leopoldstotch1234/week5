@@ -54,7 +54,33 @@ podTemplate(yaml: '''
         }
       }
     }
-
+    stage('Code coverage') {
+      sh 'printenv'
+      echo "My CC branch is: ${env.BRANCH_NAME}"
+      echo "I will execute Code Coverate only on the Master branch"
+      if (env.BRANCH_NAME == "master") {
+      echo "I am the ${env.BRANCH_NAME} branch"
+      
+      try {
+        sh '''
+        pwd
+        cd Chapter08/sample1
+        ./gradlew jacocoTestCoverageVerification --refresh-dependencies
+        ./gradlew jacocoTestReport --refresh-dependencies
+        echo "I executed Code Coverage"
+        '''
+      } catch (Exception E) {
+          echo 'Failure detected'
+          caught = true;
+        }
+	finally{
+	      publishHTML (target: [
+        reportDir: 'Chapter08/sample1/build/reports/tests/test',
+        reportFiles: 'index.html',
+        reportName: "JaCoCo Report"
+        ]) }
+      }
+    }
     stage('Build Java Image') {
       container('kaniko') {
         stage('Build a gradle project') {
