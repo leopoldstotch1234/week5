@@ -37,50 +37,23 @@ podTemplate(yaml: '''
 ''') {
   node(POD_LABEL) {
     stage('Build a gradle project') {
-      git 'https://github.com/dlambrig/Continuous-Delivery-with-Docker-and-Jenkins-Second-Edition.git'
+      git 'https://github.com/leopoldstotch1234/week5.git'
       container('gradle') {
         stage('Build a gradle project') {
           sh '''
-          echo "151.101.0.215 repo.maven.apache.org" | tee -a /etc/hosts
           cd Chapter08/sample1
-          sed -i 's/minimum = 0.2/minimum = 0.0/' build.gradle
+          sed -i 's/minimum = 0.2/minimum = 0.1/' build.gradle
           sed -i '/checkstyle {/,/}/d' build.gradle 
           sed -i '/checkstyle/d' build.gradle 
           cat build.gradle
           chmod +x gradlew
-          ./gradlew build --refresh-dependencies
+          ./gradlew build
           mv ./build/libs/calculator-0.0.1-SNAPSHOT.jar /mnt
           '''
         }
       }
     }
-    stage('Code coverage') {
-      sh 'printenv'
-      echo "My CC branch is: ${env.BRANCH_NAME}"
-      echo "I will execute Code Coverate only on the Master branch"
-      if (env.BRANCH_NAME == "master") {
-      echo "I am the ${env.BRANCH_NAME} branch"
-      
-      try {
-        sh '''
-        pwd
-        cd Chapter08/sample1
-        ./gradlew jacocoTestCoverageVerification --refresh-dependencies
-        ./gradlew jacocoTestReport --refresh-dependencies
-        echo "I executed Code Coverage"
-        '''
-      } catch (Exception E) {
-          echo 'Failure detected'
-          caught = true;
-        }
-	finally{
-	      publishHTML (target: [
-        reportDir: 'Chapter08/sample1/build/reports/tests/test',
-        reportFiles: 'index.html',
-        reportName: "JaCoCo Report"
-        ]) }
-      }
-    }
+
     stage('Build Java Image') {
       container('kaniko') {
         stage('Build a gradle project') {

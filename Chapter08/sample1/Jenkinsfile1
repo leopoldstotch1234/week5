@@ -1,0 +1,97 @@
+podTemplate(containers: [
+containerTemplate(
+name: 'gradle',
+image: 'gradle',
+command: 'sleep',
+args: '30d'
+),
+]//,
+//podRetention: always()
+	   ) {
+node(POD_LABEL) {
+  stage('Run pipeline against a gradle project - test MAIN') {
+  caught = false;
+  container('gradle') {
+    stage('Build a gradle project') {
+      echo "I am the ${env.BRANCH_NAME} branch"
+// from the git plugin //
+// https://www.jenkins.io/doc/pipeline/steps/git/
+        git 'https://github.com/leopoldstotch1234/week5.git'
+        sh '''
+        cd Chapter08/sample1
+	      echo "151.101.0.215 repo.maven.apache.org" | tee -a /etc/hosts
+	      chmod +x gradlew
+        '''
+        }
+    }
+    stage('Code coverage') {
+      sh 'printenv'
+      echo "My CC branch is: ${env.BRANCH_NAME}"
+      echo "I will execute Code Coverate only on the Master branch"
+      if (env.BRANCH_NAME == "master") {
+      echo "I am the ${env.BRANCH_NAME} branch"
+      
+      try {
+        sh '''
+        pwd
+        cd Chapter08/sample1
+        ./gradlew jacocoTestCoverageVerification --refresh-dependencies
+        ./gradlew jacocoTestReport --refresh-dependencies
+        echo "I executed Code Coverage"
+        '''
+      } catch (Exception E) {
+          echo 'Failure detected'
+          caught = true;
+        }
+	finally{
+	      publishHTML (target: [
+        reportDir: 'Chapter08/sample1/build/reports/tests/test',
+        reportFiles: 'index.html',
+        reportName: "JaCoCo Report"
+        ]) }
+      }
+    }
+    stage("Tests") {
+      echo "I am the ${env.BRANCH_NAME} branch"
+      echo "I will execut on all branches"
+		  try {
+            sh '''
+			      echo "running check"
+        	  pwd
+            cd Chapter08/sample1
+            ./gradlew test --refresh-dependencies
+            ./gradlew jacocoTestReport --refresh-dependencies
+            '''
+            } catch (Exception E) {
+                echo 'Failure detected'
+                caught = true;
+                }
+        stage("CheckStyle") {
+          try {
+            sh '''
+            pwd
+            cd Chapter08/sample1
+            ./gradlew checkstyleMain --refresh-dependencies
+            ./gradlew jacocoTestReport --refresh-dependencies
+            '''
+          } catch (Exception E) {
+            echo 'Failure detected'
+          }
+      	finally{	
+	      publishHTML (target: [
+        reportDir: 'Chapter08/sample1/build/reports/checkstyle',
+	      reportFiles: 'main.html',
+        reportName: "JaCoCo checkstyle"
+        ])}
+        }
+      }   
+    }
+    if(!caught){
+      echo 'tests pass!'
+    }
+    else{
+      echo 'tests fail!'
+    }
+    
+  }
+}
