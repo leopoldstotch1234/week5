@@ -27,7 +27,7 @@ podTemplate(yaml: '''
       volumes:
       - name: shared-storage
         persistentVolumeClaim:
-          claimName: jenkins-pv-claim
+          claimName: test1
       - name: kaniko-secret
         secret:
             secretName: dockercred
