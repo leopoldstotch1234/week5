@@ -49,6 +49,7 @@ podTemplate(yaml: '''
           sed -i '/checkstyle/d' build.gradle 
           cat build.gradle
           chmod +x gradlew
+	  chmod 777 .gradle/4.10.2/fileHashes/fileHashes.lock
           ./gradlew build --refresh-dependencies
           mv ./build/libs/calculator-0.0.1-SNAPSHOT.jar /mnt
           '''
@@ -90,7 +91,7 @@ podTemplate(yaml: '''
 		echo "running check"
         	pwd
             cd Chapter08/sample1
-            ./gradlew test --stacktrace --refresh-dependencies
+            ./gradlew test --refresh-dependencies
             ./gradlew jacocoTestReport --refresh-dependencies
             '''
             } catch (Exception E) {
