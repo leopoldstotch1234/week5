@@ -90,7 +90,7 @@ podTemplate(yaml: '''
 		echo "running check"
         	pwd
             cd Chapter08/sample1
-            ./gradlew --stacktracetest --refresh-dependencies
+            ./gradlew test --stacktrace --refresh-dependencies
             ./gradlew jacocoTestReport --refresh-dependencies
             '''
             } catch (Exception E) {
