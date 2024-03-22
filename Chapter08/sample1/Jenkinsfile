@@ -1,8 +1,8 @@
 podTemplate(yaml: '''
     apiVersion: v1
     kind: Pod
-    podRetention: always()
     spec:
+      podRetention: always()
       containers:
       - name: gradle
         image: gradle
