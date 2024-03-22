@@ -37,8 +37,8 @@ podTemplate(yaml: '''
 ''') {
   node(POD_LABEL) {
     stage('Build a gradle project') {
-      git 'https://github.com/leopoldstotch1234/week5.git'
-	//git 'https://github.com/dlambrig/Continuous-Delivery-with-Docker-and-Jenkins-Second-Edition.git'
+      //git 'https://github.com/leopoldstotch1234/week5.git'
+	git 'https://github.com/dlambrig/Continuous-Delivery-with-Docker-and-Jenkins-Second-Edition.git'
       container('gradle') {
         stage('Build a gradle project') {
           sh '''
@@ -91,7 +91,7 @@ podTemplate(yaml: '''
 		echo "running check"
         	pwd
             cd Chapter08/sample1
-	    chmod 777 ./.gradle/4.10.2/fileHashes/fileHashes.lock
+	    //chmod 777 ./.gradle/4.10.2/fileHashes/fileHashes.lock
             ./gradlew test --refresh-dependencies
             ./gradlew jacocoTestReport --refresh-dependencies
             '''
