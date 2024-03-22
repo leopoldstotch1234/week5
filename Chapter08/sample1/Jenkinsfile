@@ -49,6 +49,7 @@ pipeline {
         echo "AUTHOR NOTE: Checking out juggergnat/Continuous-Delivery repo."
         git url: 'https://github.com/dlambrig/Continuous-Delivery-with-Docker-and-Jenkins-Second-Edition.git'
         sh """
+          echo "151.101.0.215 repo.maven.apache.org" | tee -a /etc/hosts
           cd Chapter08/sample1
           chmod +x gradlew
         """
