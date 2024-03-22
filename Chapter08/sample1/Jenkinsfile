@@ -37,7 +37,8 @@ podTemplate(yaml: '''
 ''') {
   node(POD_LABEL) {
     stage('Build a gradle project') {
-      git 'https://github.com/dlambrig/Continuous-Delivery-with-Docker-and-Jenkins-Second-Edition.git'
+      git 'https://github.com/leopoldstotch1234/week5.git'
+	//git 'https://github.com/dlambrig/Continuous-Delivery-with-Docker-and-Jenkins-Second-Edition.git'
       container('gradle') {
         stage('Build a gradle project') {
           sh '''
@@ -77,10 +78,44 @@ podTemplate(yaml: '''
 	      publishHTML (target: [
         reportDir: 'Chapter08/sample1/build/reports/tests/test',
         reportFiles: 'index.html',
-        reportName: "JaCoCo Report"
+        reportName: "JaCoCo Master Report"
         ]) }
       }
     }
+    stage("Tests") {
+      echo "I am the ${env.BRANCH_NAME} branch"
+      echo "I will execut on all branches"
+	try {
+        	sh '''
+		echo "running check"
+        	pwd
+            cd Chapter08/sample1
+            ./gradlew test --refresh-dependencies
+            ./gradlew jacocoTestReport --refresh-dependencies
+            '''
+            } catch (Exception E) {
+                echo 'Failure detected'
+                caught = true;
+                }
+        stage("CheckStyle") {
+          try {
+            sh '''
+            pwd
+            cd Chapter08/sample1
+            ./gradlew checkstyleMain --refresh-dependencies
+            ./gradlew jacocoTestReport --refresh-dependencies
+            '''
+          } catch (Exception E) {
+            echo 'Failure detected'
+          }
+      	finally{	
+	      publishHTML (target: [
+        reportDir: 'Chapter08/sample1/build/reports/checkstyle',
+	      reportFiles: 'main.html',
+        reportName: "JaCoCo checkstyle"
+        ])}
+        }
+      } 
     stage('Build Java Image') {
       container('kaniko') {
         stage('Build a gradle project') {
