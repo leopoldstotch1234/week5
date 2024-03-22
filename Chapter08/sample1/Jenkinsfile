@@ -91,7 +91,6 @@ podTemplate(yaml: '''
 		echo "running check"
         	pwd
             cd Chapter08/sample1
-	    //chmod 777 ./.gradle/4.10.2/fileHashes/fileHashes.lock
             ./gradlew test --refresh-dependencies
             ./gradlew jacocoTestReport --refresh-dependencies
             '''
