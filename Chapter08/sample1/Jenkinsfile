@@ -1,9 +1,7 @@
 podTemplate(yaml: '''
     apiVersion: v1
     kind: Pod
-    metadata:
-      annotations:
-        pod.beta.jenkins.io/retention: always
+    podRetention: always()
     spec:
       containers:
       - name: gradle
