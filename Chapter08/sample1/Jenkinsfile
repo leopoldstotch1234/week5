@@ -84,10 +84,10 @@ podTemplate(yaml: '''
     stage("Tests") {
       echo "I am the ${env.BRANCH_NAME} branch"
       echo "I will execut on all branches"
-		  try {
-            sh '''
+	try {
+        	sh '''
 		echo "running check"
-        	  pwd
+        	pwd
             cd Chapter08/sample1
             ./gradlew test --refresh-dependencies
             ./gradlew jacocoTestReport --refresh-dependencies
