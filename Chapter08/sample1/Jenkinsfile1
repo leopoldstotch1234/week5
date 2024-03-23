@@ -9,7 +9,11 @@ volumeMounts: [
             name: 'shared-storage'
         ]
 ),
-]//,
+],
+volumes: [
+    persistentVolumeClaim(claimName: 'jenkins-pv-claim', name: 'shared-storage')
+]
+//,
 //podRetention: always()
 	   ) {
 node(POD_LABEL) {
