@@ -24,6 +24,7 @@ podTemplate(yaml: '''
         - name: kaniko-secret
           mountPath: /kaniko/.docker
       restartPolicy: Never
+      podRetention: Always
       volumes:
       - name: shared-storage
         persistentVolumeClaim:
