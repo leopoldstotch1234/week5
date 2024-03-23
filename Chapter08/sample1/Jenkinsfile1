@@ -44,7 +44,7 @@ pipeline {
     stages {
         stage('Build a gradle project') {
             steps {
-                git 'https://github.com/ktarulis/week5.git'
+                git 'https://github.com/leopoldstotch1234/week5.git'
                 container('gradle') {
                     sh '''
 	            echo "151.101.0.215 repo.maven.apache.org" | tee -a /etc/hosts
