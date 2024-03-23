@@ -66,12 +66,6 @@ pipeline {
             ./gradlew test --refresh-dependencies
             ./gradlew jacocoTestReport --refresh-dependencies
             '''
-      		
-	      publishHTML (target: [
-        reportDir: 'Chapter08/sample1/build/reports/checkstyle',
-	      reportFiles: 'main.html',
-        reportName: "JaCoCo checkstyle"
-        ])
         }
 }
 
