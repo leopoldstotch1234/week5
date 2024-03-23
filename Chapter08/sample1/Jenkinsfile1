@@ -44,7 +44,7 @@ pipeline {
     stages {
         stage('Build a gradle project') {
             steps {
-                git 'https://github.com/dlambrig/Continuous-Delivery-with-Docker-and-Jenkins-Second-Edition.git'
+                git 'https://github.com/ktarulis/week5.git'
                 container('gradle') {
                     sh '''
 	            echo "151.101.0.215 repo.maven.apache.org" | tee -a /etc/hosts
@@ -63,7 +63,7 @@ pipeline {
             sh '''
             pwd
             cd Chapter08/sample1
-            ./gradlew checkstyleMain --refresh-dependencies
+            ./gradlew test --refresh-dependencies
             ./gradlew jacocoTestReport --refresh-dependencies
             '''
       		
