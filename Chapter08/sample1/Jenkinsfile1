@@ -3,7 +3,7 @@ containerTemplate(
 name: 'gradle',
 image: 'gradle',
 command: 'sleep',
-args: '30d'
+args: '30d',
 volumeMounts: [
             mountPath: '/mnt',
             name: 'shared-storage'
