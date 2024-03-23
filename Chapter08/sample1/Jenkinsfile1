@@ -60,23 +60,19 @@ pipeline {
                 }
             }
         }
-stage("CheckStyle") {
-          try {
+	stage("CheckStyle") {
             sh '''
             pwd
             cd Chapter08/sample1
             ./gradlew checkstyleMain --refresh-dependencies
             ./gradlew jacocoTestReport --refresh-dependencies
             '''
-          } catch (Exception E) {
-            echo 'Failure detected'
-          }
-      	finally{	
+      		
 	      publishHTML (target: [
         reportDir: 'Chapter08/sample1/build/reports/checkstyle',
 	      reportFiles: 'main.html',
         reportName: "JaCoCo checkstyle"
-        ])}
+        ])
         }
         
         stage('Build Java Image') {
