@@ -61,6 +61,7 @@ pipeline {
             }
         }
 	stage("CheckStyle") {
+	   steps{
             sh '''
             pwd
             cd Chapter08/sample1
@@ -74,6 +75,7 @@ pipeline {
         reportName: "JaCoCo checkstyle"
         ])
         }
+}
         
         stage('Build Java Image') {
             steps {
