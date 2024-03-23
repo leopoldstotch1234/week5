@@ -4,6 +4,10 @@ name: 'gradle',
 image: 'gradle',
 command: 'sleep',
 args: '30d'
+volumeMounts: [
+            mountPath: '/mnt',
+            name: 'shared-storage'
+        ]
 ),
 ]//,
 //podRetention: always()
