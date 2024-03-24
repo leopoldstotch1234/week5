@@ -56,7 +56,7 @@ pipeline {
     }
 }
     stage('Maser Code coverage') {
-      if (env.BRANCH_NAME == "master"){
+      when {branch 'master'}{
       steps {
         echo 'Code coverage test on main branch.'
         sh """
@@ -68,7 +68,12 @@ pipeline {
     }
 
     stage('All - Code check.') {
-      if (env.BRANCH_NAME == "feature" || env.BRANCH_NAME == "playground"){
+     when {
+        anyOf {
+          branch 'feature'
+          branch 'playground'
+        }
+      }{
       steps {
         echo 'Running Checkstyle on env.BRANCH_NAM'
         sh """
