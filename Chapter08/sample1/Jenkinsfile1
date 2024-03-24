@@ -58,7 +58,7 @@ pipeline {
     stage('Maser Code coverage') {
       when {branch 'master'}
       steps {
-        echo 'Code coverage test on main branch.'
+        echo 'Code coverage test on master branch.'
         sh """
           cd Chapter08/sample1;
           ./gradlew jacocoTestReport
@@ -75,7 +75,7 @@ pipeline {
         }
       }
       steps {
-        echo 'Running Checkstyle on env.BRANCH_NAM'
+        echo 'Running Checkstyle on env.BRANCH_NAME'
         sh """
           cd Chapter08/sample1; 
           ./gradlew test
@@ -84,7 +84,6 @@ pipeline {
       }
     }
   }
-
 
   post {
     always   {
@@ -116,8 +115,6 @@ pipeline {
         	if ( env.BRANCH_NAME == 'feature' )    { 
 		  env.IMAGE = 'calculator-feature:0.1' 
 		}
-
-          // From assignment: Container build when conditions are met.
           container('gradle') {
             sh '''
               cd Chapter08/sample1
@@ -130,9 +127,6 @@ pipeline {
               mv ./build/libs/calculator-0.0.1-SNAPSHOT.jar /mnt
             '''
           }
-
-          // From assignment: Container communicates build to Docker Hub.
-          // From assignment: Container name defined using variables set above.
           container('kaniko') {
             sh '''
               echo 'FROM openjdk:8-jre' > Dockerfile
@@ -144,10 +138,8 @@ pipeline {
           }
         }
       }
-      echo 'End: tests pass!'
+      echo 'tests pass!'
     }
-    failure  { echo 'End: tests fail!' }
-    unstable { echo 'End: run is unstable!' }
-    changed  { echo 'End: pipeline run changed!' }
+    failure  { echo 'tests fail!' }
   }
 }
