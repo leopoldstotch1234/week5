@@ -111,9 +111,12 @@ pipeline {
     success  {
       script {
 	env.CONTAINER_NAME = ''
-        if ( env.BRANCH_NAME == 'master' )       { env.CONTAINER_NAME = 'calculator:1.0' }
-        if ( env.BRANCH_NAME == 'feature' )    { env.CONTAINER_NAME = 'calculator-feature:0.1' }
-        if ( env.BRANCH_NAME == 'playground' ) { echo "Create no container." }
+        if ( env.BRANCH_NAME == 'master' )       { 
+		env.CONTAINER_NAME = 'calculator:1.0' 
+		}
+        if ( env.BRANCH_NAME == 'feature' )    { 
+		env.CONTAINER_NAME = 'calculator-feature:0.1' 
+		}
 
         if ( "${CONTAINER_NAME}" ) {
 
