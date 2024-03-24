@@ -90,21 +90,20 @@ pipeline {
     always   {
       script {
         if ( env.BRANCH_NAME == 'master' ) {
-          // Code coverage test report.
-          // publishHTML (target: [
-          //   reportDir: 'Chapter08/sample1/build/reports/tests/test',
-          //   reportFiles: 'index.html',
-          //   reportName: "JaCoCo CC Report"
-          // ])
+	 publishHTML (target: [
+         reportDir: 'Chapter08/sample1/build/reports/tests/test',
+         reportFiles: 'index.html',
+         reportName: "JaCoCo CC Report"
+         ])
         }
-        if (env.BRANCH_NAME == 'feature' || env.BRANCH_NAME == 'playground') {
+       // if (env.BRANCH_NAME == 'feature' || env.BRANCH_NAME == 'playground') {
 
           publishHTML (target: [
           reportDir: 'Chapter08/sample1/build/reports/checkstyle',
           reportFiles: 'main.html',
         reportName: "JaCoCo Checkstyle"
            ])
-        }
+        //}
       }
     }
 
@@ -112,8 +111,6 @@ pipeline {
     success  {
       script {
 	env.CONTAINER_NAME = ''
-        // From assignment: Container should only create on main or feature, not playground.  
-        // From assignment: Container name is repository/image:version depending on branch.
         if ( env.BRANCH_NAME == 'master' )       { env.CONTAINER_NAME = 'calculator:1.0' }
         if ( env.BRANCH_NAME == 'feature' )    { env.CONTAINER_NAME = 'calculator-feature:0.1' }
         if ( env.BRANCH_NAME == 'playground' ) { echo "Create no container." }
