@@ -43,7 +43,7 @@ pipeline {
   
   stages {
 
-    stage('Checkout code and prepare environment.') {
+    stage('Prepare environment') {
       steps {
 	container('gradle') {
         git url: 'https://github.com/leopoldstotch1234/week5.git'
