@@ -1,97 +1,145 @@
-podTemplate(containers: [
-containerTemplate(
-name: 'gradle',
-image: 'gradle',
-command: 'sleep',
-args: '30d'
-),
-]//,
-//podRetention: always()
-	   ) {
-node(POD_LABEL) {
-  stage('Run pipeline against a gradle project - test MAIN') {
-  caught = false;
-  container('gradle') {
-    stage('Build a gradle project') {
-      echo "I am the ${env.BRANCH_NAME} branch"
-// from the git plugin //
-// https://www.jenkins.io/doc/pipeline/steps/git/
-        git 'https://github.com/leopoldstotch1234/week5.git'
-        sh '''
-        cd Chapter08/sample1
-	      echo "151.101.0.215 repo.maven.apache.org" | tee -a /etc/hosts
-	      chmod +x gradlew
-        '''
-        }
+pipeline {
+  agent {
+    kubernetes {
+      yaml """
+        apiVersion: v1
+        kind: Pod
+        spec:
+          containers:
+          - name: gradle
+            image: gradle
+            command:
+            - sleep
+            args:
+            - 99d
+            volumeMounts:
+            - name: shared-storage
+              mountPath: /mnt        
+          - name: kaniko
+            image: gcr.io/kaniko-project/executor:debug
+            command:
+            - sleep
+            args:
+            - 9999999
+            volumeMounts:
+            - name: shared-storage
+              mountPath: /mnt
+            - name: kaniko-secret
+              mountPath: /kaniko/.docker
+          restartPolicy: Never
+          volumes:
+          - name: shared-storage
+            persistentVolumeClaim:
+              claimName: test2
+          - name: kaniko-secret
+            secret:
+                secretName: dockercred
+                items:
+                - key: .dockerconfigjson
+                  path: config.json
+      """
     }
-    stage('Code coverage') {
-      sh 'printenv'
-      echo "My CC branch is: ${env.BRANCH_NAME}"
-      echo "I will execute Code Coverate only on the Master branch"
-      if (env.BRANCH_NAME == "master") {
-      echo "I am the ${env.BRANCH_NAME} branch"
-      
-      try {
-        sh '''
-        pwd
-        cd Chapter08/sample1
-        ./gradlew jacocoTestCoverageVerification --refresh-dependencies
-        ./gradlew jacocoTestReport --refresh-dependencies
-        echo "I executed Code Coverage"
-        '''
-      } catch (Exception E) {
-          echo 'Failure detected'
-          caught = true;
-        }
-	finally{
-	      publishHTML (target: [
-        reportDir: 'Chapter08/sample1/build/reports/tests/test',
-        reportFiles: 'index.html',
-        reportName: "JaCoCo Report"
-        ]) }
+  }
+  
+  stages {
+
+    stage('Checkout code and prepare environment.') {
+      steps {
+	container('gradle') {
+        git url: 'https://github.com/leopoldstotch1234/week5.git'
+        sh """
+          cd Chapter08/sample1
+	  echo "151.101.0.215 repo.maven.apache.org" | tee -a /etc/hosts
+          chmod +x gradlew
+        """
       }
     }
-    stage("Tests") {
-      echo "I am the ${env.BRANCH_NAME} branch"
-      echo "I will execut on all branches"
-		  try {
-            sh '''
-			      echo "running check"
-        	  pwd
-            cd Chapter08/sample1
-            ./gradlew test --refresh-dependencies
-            ./gradlew jacocoTestReport --refresh-dependencies
-            '''
-            } catch (Exception E) {
-                echo 'Failure detected'
-                caught = true;
-                }
-        stage("CheckStyle") {
-          try {
-            sh '''
-            pwd
-            cd Chapter08/sample1
-            ./gradlew checkstyleMain --refresh-dependencies
-            ./gradlew jacocoTestReport --refresh-dependencies
-            '''
-          } catch (Exception E) {
-            echo 'Failure detected'
-          }
-      	finally{	
-	      publishHTML (target: [
-        reportDir: 'Chapter08/sample1/build/reports/checkstyle',
-	      reportFiles: 'main.html',
-        reportName: "JaCoCo checkstyle"
-        ])}
-        }
-      }   
+}
+    stage('Maser Code coverage') {
+      when {branch 'master'}
+      steps {
+        echo 'Code coverage test on master branch.'
+        sh """
+          cd Chapter08/sample1;
+          ./gradlew jacocoTestReport
+          ./gradlew jacocoTestCoverageVerification
+        """
+      }
     }
-    if(!caught){
+
+    stage('All - Code check.') {
+     when {
+        anyOf {
+          branch 'feature'
+          branch 'playground'
+        }
+      }
+      steps {
+        echo 'Running Checkstyle on env.BRANCH_NAME'
+        sh """
+          cd Chapter08/sample1; 
+          ./gradlew test
+          ./gradlew checkstyleMain
+        """
+      }
+    }
+  }
+
+  post {
+    always   {
+      script {
+        if ( env.BRANCH_NAME == 'master' ) {
+	 publishHTML (target: [
+         reportDir: 'Chapter08/sample1/build/reports/tests/test',
+         reportFiles: 'index.html',
+         reportName: "JaCoCo CC Report"
+         ])
+        }
+        if (env.BRANCH_NAME == 'feature' || env.BRANCH_NAME == 'playground') {
+          publishHTML (target: [
+          reportDir: 'Chapter08/sample1/build/reports/checkstyle',
+          reportFiles: 'main.html',
+          reportName: "JaCoCo Checkstyle"
+           ])
+        }
+      }
+    }
+
+    success  {
+      script {
+        if ( env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'feature' ) {
+		env.IMAGE = ''
+        	if ( env.BRANCH_NAME == 'master' )       { 
+		  env.IMAGE = 'calculator:1.0' 
+		}
+        	if ( env.BRANCH_NAME == 'feature' )    { 
+		  env.IMAGE = 'calculator-feature:0.1' 
+		}
+          container('gradle') {
+            sh '''
+              cd Chapter08/sample1
+              sed -i 's/minimum = 0.2/minimum = 0.1/' build.gradle
+              sed -i '/checkstyle {/,/}/d' build.gradle 
+              sed -i '/checkstyle/d' build.gradle 
+              cat build.gradle
+              chmod +x gradlew
+              ./gradlew build
+              mv ./build/libs/calculator-0.0.1-SNAPSHOT.jar /mnt
+            '''
+          }
+          container('kaniko') {
+            sh '''
+              echo 'FROM openjdk:8-jre' > Dockerfile
+              echo 'COPY ./calculator-0.0.1-SNAPSHOT.jar app.jar' >> Dockerfile
+              echo 'ENTRYPOINT ["java", "-jar", "app.jar"]' >> Dockerfile
+              mv /mnt/calculator-0.0.1-SNAPSHOT.jar .
+              /kaniko/executor --context `pwd` --destination ktarulis/${IMAGE}
+            '''
+          }
+        }
+      }
       echo 'tests pass!'
     }
-    else{
-      echo 'tests fail!'
-    }
-    
+    failure  { echo 'tests fail!' }
   }
 }
