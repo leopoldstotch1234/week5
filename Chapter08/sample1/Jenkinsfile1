@@ -73,7 +73,7 @@ pipeline {
           branch 'feature'
           branch 'playground'
         }
-      }{
+      }
       steps {
         echo 'Running Checkstyle on env.BRANCH_NAM'
         sh """
@@ -82,7 +82,7 @@ pipeline {
           ./gradlew checkstyleMain
         """
       }
-    }}
+    }
   }
 
 
