@@ -111,7 +111,7 @@ pipeline {
     // From assignment: Container should only create on success.
     success  {
       script {
-
+	env.CONTAINER_NAME = ''
         // From assignment: Container should only create on main or feature, not playground.  
         // From assignment: Container name is repository/image:version depending on branch.
         if ( env.BRANCH_NAME == 'master' )       { env.CONTAINER_NAME = 'calculator:1.0' }
