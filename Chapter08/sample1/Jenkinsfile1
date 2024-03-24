@@ -55,7 +55,7 @@ pipeline {
       }
     }
 }
-    stage(Maser Code coverage') {
+    stage('Maser Code coverage') {
       when { branch 'master' }
       steps {
         echo 'Code coverage test on main branch.'
