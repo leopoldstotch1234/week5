@@ -56,7 +56,7 @@ pipeline {
     }
 }
     stage('Maser Code coverage') {
-      when { branch 'master' }
+      if (env.BRANCH_NAME == "master"){
       steps {
         echo 'Code coverage test on main branch.'
         sh """
@@ -64,16 +64,11 @@ pipeline {
           ./gradlew jacocoTestReport
           ./gradlew jacocoTestCoverageVerification
         """
-      }
+      }}
     }
 
     stage('All - Code check.') {
-      when {
-        anyOf {
-          branch 'feature'
-          branch 'playground'
-        }
-      }
+      if (env.BRANCH_NAME == "feature" || env.BRANCH_NAME == "playground"){
       steps {
         echo 'Running Checkstyle on env.BRANCH_NAM'
         sh """
@@ -82,11 +77,11 @@ pipeline {
           ./gradlew checkstyleMain
         """
       }
-    }
+    }}
   }
 
-  post {
 
+  post {
     always   {
       script {
         if ( env.BRANCH_NAME == 'master' ) {
@@ -96,29 +91,26 @@ pipeline {
          reportName: "JaCoCo CC Report"
          ])
         }
-       // if (env.BRANCH_NAME == 'feature' || env.BRANCH_NAME == 'playground') {
-
+        if (env.BRANCH_NAME == 'feature' || env.BRANCH_NAME == 'playground') {
           publishHTML (target: [
           reportDir: 'Chapter08/sample1/build/reports/checkstyle',
           reportFiles: 'main.html',
-        reportName: "JaCoCo Checkstyle"
+          reportName: "JaCoCo Checkstyle"
            ])
-        //}
+        }
       }
     }
 
-    // From assignment: Container should only create on success.
     success  {
       script {
-	env.CONTAINER_NAME = ''
-        if ( env.BRANCH_NAME == 'master' )       { 
-		env.CONTAINER_NAME = 'calculator:1.0' 
+        if ( env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'feature' ) {
+		env.IMAGE = ''
+        	if ( env.BRANCH_NAME == 'master' )       { 
+		  env.IMAGE = 'calculator:1.0' 
 		}
-        if ( env.BRANCH_NAME == 'feature' )    { 
-		env.CONTAINER_NAME = 'calculator-feature:0.1' 
+        	if ( env.BRANCH_NAME == 'feature' )    { 
+		  env.IMAGE = 'calculator-feature:0.1' 
 		}
-
-        if ( "${CONTAINER_NAME}" ) {
 
           // From assignment: Container build when conditions are met.
           container('gradle') {
@@ -142,7 +134,7 @@ pipeline {
               echo 'COPY ./calculator-0.0.1-SNAPSHOT.jar app.jar' >> Dockerfile
               echo 'ENTRYPOINT ["java", "-jar", "app.jar"]' >> Dockerfile
               mv /mnt/calculator-0.0.1-SNAPSHOT.jar .
-              /kaniko/executor --context `pwd` --destination ktarulis/hello-kaniko:1.0
+              /kaniko/executor --context `pwd` --destination ktarulis/env.IMAGE
             '''
           }
         }
