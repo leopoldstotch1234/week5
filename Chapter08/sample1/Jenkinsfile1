@@ -46,6 +46,7 @@ pipeline {
 
     stage('Checkout code and prepare environment.') {
       steps {
+	container('gradle') {
         echo "AUTHOR NOTE: Checking out juggergnat/Continuous-Delivery repo."
         git url: 'https://github.com/leopoldstotch1234/week5.git'
         sh """
@@ -55,6 +56,7 @@ pipeline {
         """
       }
     }
+}
 
     // Not from assignment. Personal sanity check.
     stage('Run nothing here. There is no MASTER branch on juggergnat/UML-SP2024-MSIT.5330-031.') {
