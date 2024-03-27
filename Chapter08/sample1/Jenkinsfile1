@@ -48,7 +48,7 @@ pipeline {
 	container('gradle') {
         git url: 'https://github.com/leopoldstotch1234/week5.git'
         sh """
-          cd Chapter08/sample1
+          cd Chapter09/sample3
 	  echo "151.101.0.215 repo.maven.apache.org" | tee -a /etc/hosts
           chmod +x gradlew
         """
@@ -77,7 +77,7 @@ pipeline {
       steps {
         echo 'Running Checkstyle on env.BRANCH_NAME'
         sh """
-          cd Chapter08/sample1; 
+          cd Chapter09/sample3; 
           ./gradlew test
           ./gradlew checkstyleMain
         """
@@ -118,7 +118,7 @@ pipeline {
 		}
           container('gradle') {
             sh '''
-              cd Chapter08/sample1
+              cd Chapter09/sample3
               sed -i 's/minimum = 0.2/minimum = 0.1/' build.gradle
               sed -i '/checkstyle {/,/}/d' build.gradle 
               sed -i '/checkstyle/d' build.gradle 
